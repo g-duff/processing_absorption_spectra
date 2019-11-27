@@ -8,6 +8,7 @@ import scipy.signal as sig
 from scipy.signal.windows import gaussian
 import mim
 
+root = os.getcwd()
 fnames = [a for a in sorted(os.listdir(root)) if '.csv' in a]
 
 ## Set and apply wavelength range
@@ -24,7 +25,7 @@ g_wind = np.divide(g_wind, sum(g_wind))
 max_mim_wl, fit_mim_wl = [], []
 wavs = wavs[i1:i2]
 
-## Add some preview graphs here
+## Add a preview graphs here
 
 
 ## Starting guess
@@ -39,13 +40,12 @@ for i in f_indices:
     wavs, refl = np.genfromtxt(fname, delimiter=';',
         skip_header=33, skip_footer=1, unpack=True)
 
-    # refl = np.convolve(refl, g_wind, mode='same')
+    ## Lowpass and truncate
+    refl = np.convolve(refl, g_wind, mode='same')
+    refl = refl[i1:i2]
 
-    i1, i2 = np.argmin((wavs-570)**2), np.argmin((wavs-800)**2)
-    m = wavs[i1:i2]
-
-    # ## Find max wavelength
-    max_mim_wl.append(m[np.argmin(refl[i1:i2])])
+    ## Find max wavelength
+    max_mim_wl.append(wavs[np.argmin(refl[i1:i2])])
 
     # Fit a Lorentz curve
     popt = opt.leastsq(mim.l_lsq, popt_0, args =(wavs[i1:i2], refl[i1:i2]))[0]
@@ -55,4 +55,5 @@ t = f_indices*10/60
 
 peak_wl_output = [[i, t[i], fit_mim_wl[i]] for i in f_indices]
 
-np.savetxt('peak_wls.txt', peak_wl_output)
+
+np.savetxt(root+'peak_wls.txt', peak_wl_output, header='index, time (min), peak wavelength (nm)')
