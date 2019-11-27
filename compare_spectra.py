@@ -52,4 +52,5 @@ for fname in fnames:
 print(max_mim_wl)
 print(fit_mim_wl)
 plt.legend()
+plt.savefig(root+'Compared_spectra.png')
 plt.show()
