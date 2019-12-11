@@ -46,11 +46,14 @@ for fname in fnames:
     popt = opt.leastsq(mim.l_lsq, popt_0, args =(wavs[i1:i2], refl[i1:i2]))[0]
     fit_mim_wl.append(popt[0])
 
-    ## Plot spectrum
+    ## Plot spectrum with label from filename
     plt.plot(wavs[i1:i2], refl[i1:i2], label = fname.replace('.csv', '').replace('_', ' '))
 
 print(max_mim_wl)
 print(fit_mim_wl)
+
+plt.xlabel('Wavelength (nm)')
+plt.ylabel('Reflection (normalised)')
 plt.legend()
 plt.savefig(root+'Compared_spectra.png')
 plt.show()
