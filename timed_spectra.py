@@ -39,8 +39,8 @@ f_indices =  np.arange(0, num_files, 1)
 
 for i, fname in enumerate(fnames):
 
-    _, refl = np.genfromtxt(root+fname, delimiter=';',
-        skip_header=33, skip_footer=1, unpack=True)
+    refl = np.genfromtxt(root+fname, delimiter=';',
+        skip_header=33, skip_footer=1, unpack=True, usecols=1)
 
     ## Lowpass and truncate
     refl = np.convolve(refl, g_wind, mode='same')
@@ -50,7 +50,7 @@ for i, fname in enumerate(fnames):
     max_mim_wl.append(wavs[np.argmin(refl[i1:i2])])
 
     # Fit a Lorentz curve
-    popt = opt.leastsq(mim.l_lsq, popt_0, args =(wavs[i1:i2], refl[i1:i2]))[0]
+    popt = opt.leastsq(mim.l_residuals, popt_0, args =(wavs[i1:i2], refl[i1:i2]))[0]
     fit_mim_wl.append(popt[0])
 
     ## Grab timestamp from inside file

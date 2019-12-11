@@ -43,7 +43,7 @@ for fname in fnames:
     max_mim_wl.append(wavs[np.argmin(refl)])
 
     ## Fit a Lorentz curve
-    popt = opt.leastsq(mim.l_lsq, popt_0, args =(wavs[i1:i2], refl[i1:i2]))[0]
+    popt = opt.leastsq(mim.l_residuals, popt_0, args =(wavs[i1:i2], refl[i1:i2]))[0]
     fit_mim_wl.append(popt[0])
 
     ## Plot spectrum with label from filename

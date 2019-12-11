@@ -10,12 +10,12 @@ def lorentz(x, a1, b1, A1, e):
     y = e+A1*f1
     return y
 
-def f_lsq(params, x, y_meas):
+def f_residuals(params, x, y_meas):
     y_fan = fano(x, *params)
     ressq = y_fan-y_meas
     return ressq
 
-def l_lsq(params, x, y_meas):
+def l_residuals(params, x, y_meas):
     y_fan = lorentz(x, *params)
     ressq = y_fan-y_meas
     return ressq
