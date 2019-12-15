@@ -10,8 +10,9 @@ import mim
 import os
 
 root = os.getcwd()
-root = '/run/user/1000/gvfs/smb-share:server=storage.its.york.ac.uk,share=physics/krauss/George/Optical measurements/19-11-13_bad_bulk/'
+root = './spec/'
 fnames = [a for a in sorted(os.listdir(root)) if '.csv' in a]
+num_files = len(fnames)
 
 ## Set and apply wavelength range
 wl1, wl2 = 500, 800
@@ -33,10 +34,6 @@ wavs = wavs[i1:i2]
 ## Starting guess
 popt_0 = [650, 60, 0.05, 0]
 
-num_files = len(fnames)
-f_indices =  np.arange(0, num_files, 1)
-
-
 for i, fname in enumerate(fnames):
 
     refl = np.genfromtxt(root+fname, delimiter=';',
@@ -47,10 +44,10 @@ for i, fname in enumerate(fnames):
     refl = refl[i1:i2]
 
     ## Find max wavelength
-    max_mim_wl.append(wavs[np.argmin(refl[i1:i2])])
+    max_mim_wl.append(wavs[np.argmin(refl)])
 
     # Fit a Lorentz curve
-    popt = opt.leastsq(mim.l_residuals, popt_0, args =(wavs[i1:i2], refl[i1:i2]))[0]
+    popt = opt.leastsq(mim.l_residuals, popt_0, args =(wavs, refl))[0]
     fit_mim_wl.append(popt[0])
 
     ## Grab timestamp from inside file
@@ -65,6 +62,10 @@ for i, fname in enumerate(fnames):
 
     print("Completion: " + str(int((i/num_files) *100))+'%', end='\r')
 
+# Start from t=0
 t = t-np.min(t)
-peak_wl_output = [[i, t[i], fit_mim_wl[i]] for i in f_indices]
-np.savetxt(root+'peak_wls.txt', peak_wl_output, header='index, time (min), peak wavelength (nm)')
+
+peak_wl_output = np.vstack((t, fit_mim_wl)).T
+np.savetxt(root+'peak_wls.txt', peak_wl_output,
+    delimiter='\t',
+    header='time(min)\t\t\tpeak wavelength (nm)')

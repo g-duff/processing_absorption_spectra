@@ -11,6 +11,7 @@ import mim
 
 ## Grab file names
 root = os.getcwd()
+root = './spec/'
 fnames = [a for a in sorted(os.listdir(root)) if '.csv' in a]
 
 ## Set and apply wavelength range
@@ -43,11 +44,11 @@ for fname in fnames:
     max_mim_wl.append(wavs[np.argmin(refl)])
 
     ## Fit a Lorentz curve
-    popt = opt.leastsq(mim.l_residuals, popt_0, args =(wavs[i1:i2], refl[i1:i2]))[0]
+    popt = opt.leastsq(mim.l_residuals, popt_0, args =(wavs, refl))[0]
     fit_mim_wl.append(popt[0])
 
     ## Plot spectrum with label from filename
-    plt.plot(wavs[i1:i2], refl[i1:i2], label = fname.replace('.csv', '').replace('_', ' '))
+    plt.plot(wavs, refl, label = fname.replace('.csv', '').replace('_', ' '))
 
 print(max_mim_wl)
 print(fit_mim_wl)
