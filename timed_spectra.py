@@ -20,8 +20,8 @@ wavs = np.genfromtxt(fpaths[0], delimiter=';',
 i1, i2 = np.argmin((wavs-wl1)**2), np.argmin((wavs-wl2)**2)
 
 ## Create low-pass gaussian window
-g_wind = sig.windows.gaussian(len(wavs), 1)
-g_wind = np.divide(g_wind, sum(g_wind))
+g_wind = gaussian(len(wavs), 1)
+g_wind = g_wind/sum(g_wind)
 
 ## Create wavelength range and peak wavelength lists
 t, max_mim_wl, fit_mim_wl = [], [], []
@@ -59,10 +59,10 @@ for i, fpath in enumerate(fpaths):
     ## Convert timestamp to minutes and add to our time list, t.
     hr, min = time_stamp[0:2], time_stamp[2:4]
     sec, ms = time_stamp[4:6], time_stamp[6:]
-    t_minutes = int(hr)*60+(int(min))+(int(sec)/60)
+    t_minutes = int(hr)*60+int(min)+int(sec)/60
     t.append(t_minutes)
 
-    print("Completion: " + str(int((i/num_files) *100))+'%', end='\r')
+    print("Completion: " + str(int((i/num_files)*100))+'%', end='\r')
 
 # Start from t=0
 t = t-np.min(t)
