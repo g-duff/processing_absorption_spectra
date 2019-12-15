@@ -6,7 +6,7 @@ import numpy as np
 import scipy.optimize as opt
 import scipy.signal as sig
 from scipy.signal.windows import gaussian
-import mim, sys, os
+import mim, os
 
 # root = os.getcwd()
 root = '../absorb_spec/'
@@ -18,10 +18,6 @@ wl1, wl2 = 550, 800
 wavs = np.genfromtxt(fpaths[0], delimiter=';',
     skip_header=33, skip_footer=1, unpack=True, usecols=(0))
 i1, i2 = np.argmin((wavs-wl1)**2), np.argmin((wavs-wl2)**2)
-
-## Create low-pass gaussian window
-g_wind = sig.windows.gaussian(len(wavs), 1)
-g_wind = np.divide(g_wind, sum(g_wind))
 
 ## Create wavelength range and peak wavelength lists
 t, max_mim_wl, fit_mim_wl = [], [], []
@@ -37,10 +33,6 @@ for i, fpath in enumerate(fpaths):
 
     refl = np.genfromtxt(fpath, delimiter=';',
         skip_header=33, skip_footer=1, unpack=True, usecols=1)
-
-    ## Lowpass and truncate
-    refl = np.convolve(refl, g_wind, mode='same')
-    refl = refl[i1:i2]
 
     ## Find max wavelength
     max_wl = wavs[np.argmin(refl)]
@@ -59,7 +51,7 @@ for i, fpath in enumerate(fpaths):
     ## Convert timestamp to minutes and add to our time list, t.
     hr, min = time_stamp[0:2], time_stamp[2:4]
     sec, ms = time_stamp[4:6], time_stamp[6:]
-    t_minutes = int(hr)*60+(int(min))+(int(sec)/60)
+    t_minutes = int(hr)*60+int(min)+int(sec)/60
     t.append(t_minutes)
 
     print("Completion: " + str(int((i/num_files) *100))+'%', end='\r')
