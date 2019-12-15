@@ -29,10 +29,10 @@ wavs = wavs[i1:i2]
 ## Starting guess
 popt_0 = [650, 60, 0.05, 0]
 
-for i, fpath in enumerate(fpaths):
+for fpath in fpaths:
 
     refl = np.genfromtxt(fpath, delimiter=';',
-        skip_header=33, skip_footer=1, unpack=True, usecols=1)
+        skip_header=33+i1, max_rows=i2-i1, unpack=True, usecols=1)
 
     ## Find max wavelength
     max_wl = wavs[np.argmin(refl)]
@@ -45,14 +45,7 @@ for i, fpath in enumerate(fpaths):
 
     ## Grab timestamp from inside file
     with open(fpath) as open_file:
-        time_stamp = [open_file.readline() for i in range(4)]
-    time_stamp = (time_stamp[3].split(';')[1])[:-1]+'0'
-
-    ## Convert timestamp to minutes and add to our time list, t.
-    hr, min = time_stamp[0:2], time_stamp[2:4]
-    sec, ms = time_stamp[4:6], time_stamp[6:]
-    t_minutes = int(hr)*60+int(min)+int(sec)/60
-    t.append(t_minutes)
+        t.append(mim.timestamp(open_file))
 
     print("Completion: " + str(int((i/num_files) *100))+'%', end='\r')
 
