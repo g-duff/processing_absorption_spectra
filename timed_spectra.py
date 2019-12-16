@@ -13,6 +13,7 @@ wl1, wl2 = 550, 800
 wavs = np.genfromtxt(fpaths[0], delimiter=';',
     skip_header=33, skip_footer=1, unpack=True, usecols=(0))
 i1, i2 = np.argmin((wavs-wl1)**2), np.argmin((wavs-wl2)**2)
+wavs = wavs[i1:i2]
 
 ## Generate reflection data
 refl = (np.genfromtxt(fpath, delimiter=';',skip_header=33+i1, max_rows=i2-i1,
@@ -20,7 +21,6 @@ refl = (np.genfromtxt(fpath, delimiter=';',skip_header=33+i1, max_rows=i2-i1,
 
 ## Grab peak wavelength for each reflection spectrum
 popt_0 = [650, 60, 0.05, 0]
-wavs = wavs[i1:i2]
 fit_mim_wl = [opt.leastsq(mim.l_residuals, popt_0, args=(wavs, r))[0][0]
     for r in refl]
 
