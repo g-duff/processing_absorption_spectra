@@ -1,25 +1,20 @@
 #!/usr/bin/python3
-# import matplotlib       # For remote use
-# matplotlib.use('Agg')   # For remote use
 import mim, os
-import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize as opt
-import scipy.signal as sig
-from scipy.signal.windows import gaussian
 from contextlib import ExitStack
 
-# root = os.getcwd()
+# Create a list of spectrum files
 root = '../absorb_spec/'
 fpaths = [root+a for a in sorted(os.listdir(root)) if '.csv' in a]
 
-## Set and apply wavelength range
+## Set and apply wavelength range using first spectrum file
 wl1, wl2 = 550, 800
 wavs = np.genfromtxt(fpaths[0], delimiter=';',
     skip_header=33, skip_footer=1, unpack=True, usecols=(0))
 i1, i2 = np.argmin((wavs-wl1)**2), np.argmin((wavs-wl2)**2)
 
-## Generate reflection spectra
+## Generate reflection data
 refl = (np.genfromtxt(fpath, delimiter=';',skip_header=33+i1, max_rows=i2-i1,
     unpack=True, usecols=1) for fpath in fpaths)
 
