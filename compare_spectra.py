@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 # import matplotlib       # For remote use
 # matplotlib.use('Agg')   # For remote use
-import os
 import numpy as np
 import scipy.optimize as opt
 import scipy.signal as sig
 import matplotlib.pyplot as plt
 from scipy.signal.windows import gaussian
-import mim
+import os, mim
 
 ## Grab file names
 root = os.getcwd()
@@ -21,8 +20,8 @@ wavs = np.genfromtxt(root+fnames[0], delimiter=';',
 i1, i2 = np.argmin((wavs-wl1)**2), np.argmin((wavs-wl2)**2)
 
 ## Create low-pass gaussian window
-g_wind = sig.windows.gaussian(len(wavs), 1)
-g_wind = np.divide(g_wind, sum(g_wind))
+g_wind = gaussian(len(wavs), 1)
+g_wind = g_wind/sum(g_wind)
 
 ## Create wavelength range and peak wavelength lists
 max_mim_wl, fit_mim_wl = [], []
@@ -44,11 +43,11 @@ for fname in fnames:
     max_mim_wl.append(wavs[np.argmin(refl)])
 
     ## Fit a Lorentz curve
-    popt = opt.leastsq(mim.l_residuals, popt_0, args =(wavs, refl))[0]
+    popt = opt.leastsq(mim.l_residuals, popt_0, args=(wavs, refl))[0]
     fit_mim_wl.append(popt[0])
 
     ## Plot spectrum with label from filename
-    plt.plot(wavs, refl, label = fname.replace('.csv', '').replace('_', ' '))
+    plt.plot(wavs, refl, label =fname.replace('.csv', '').replace('_', ' '))
 
 print(max_mim_wl)
 print(fit_mim_wl)

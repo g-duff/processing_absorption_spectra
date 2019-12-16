@@ -17,6 +17,7 @@ fpaths = [root+a for a in sorted(os.listdir(root)) if '.csv' in a]
 wavs = np.genfromtxt(fpaths[0], delimiter=';',
     skip_header=33, skip_footer=1, unpack=True, usecols=(0))
 i1, i2 = np.argmin((wavs-wl1)**2), np.argmin((wavs-wl2)**2)
+
 wavs = wavs[i1:i2]
 
 ## Generate reflection data
@@ -34,7 +35,7 @@ with ExitStack() as stack:
     open_files = (stack.enter_context(open(fpath)) for fpath in fpaths)
     t = [mim.timestamp(open_file) for open_file in open_files]
 
-# Start from t=0 then output
+# Start from t=0
 t = t-np.min(t)
 peak_wl_output = np.vstack((t, mim_wl, mim_wl_std)).T
 np.savetxt(root+'peak_wls.txt', peak_wl_output, delimiter='\t',
