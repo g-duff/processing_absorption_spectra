@@ -1,7 +1,4 @@
 #!/usr/bin/python3
-# import matplotlib       # For remote use
-# matplotlib.use('Agg')   # For remote use
-import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize as opt
 import scipy.signal as sig
@@ -26,9 +23,6 @@ g_wind = g_wind/sum(g_wind)
 ## Create wavelength range and peak wavelength lists
 t, max_mim_wl, fit_mim_wl = [], [], []
 wavs = wavs[i1:i2]
-
-## Add a preview graphs here
-
 
 ## Starting guess
 popt_0 = [650, 60, 0.05, 0]
