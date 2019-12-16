@@ -8,10 +8,9 @@ import os
 
 root = os.getcwd()
 root = '../absorb_spec/'
-t, pk_wl, fit_wl = np.genfromtxt(root+'peak_wls.txt', skip_header=1, unpack=True)
+t, fit_wl, err_wl = np.genfromtxt(root+'peak_wls.txt', skip_header=1, unpack=True)
 
-plt.plot(t, pk_wl, 'C0.', markersize=2)
-plt.plot(t, fit_wl, 'C1.', markersize=2)
+plt.errorbar(t, fit_wl, yerr=3*err_wl)
 plt.grid(True)
 plt.xlabel('Time (minutes)')
 plt.ylabel('Peak wavelength (nm)')

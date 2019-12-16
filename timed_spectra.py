@@ -1,67 +1,48 @@
 #!/usr/bin/python3
+# import concurrent.futures
+import mim, os
 import numpy as np
 import scipy.optimize as opt
-import scipy.signal as sig
-from scipy.signal.windows import gaussian
-import mim, sys, os
+from contextlib import ExitStack
 
-# root = os.getcwd()
-root = '../absorb_spec/'
-fpaths = [root+a for a in sorted(os.listdir(root)) if '.csv' in a]
-num_files = len(fpaths)
-
-## Set and apply wavelength range
+# Dashboard
 wl1, wl2 = 550, 800
+popt_0 = [650, 60, 0.05, 0]
+root = '../absorb_spec/'
+
+# Create a list of spectrum files
+fpaths = [root+a for a in sorted(os.listdir(root)) if '.csv' in a]
+
+## Set and apply wavelength range using first spectrum file
 wavs = np.genfromtxt(fpaths[0], delimiter=';',
     skip_header=33, skip_footer=1, unpack=True, usecols=(0))
 i1, i2 = np.argmin((wavs-wl1)**2), np.argmin((wavs-wl2)**2)
 
-## Create low-pass gaussian window
-g_wind = gaussian(len(wavs), 1)
-g_wind = g_wind/sum(g_wind)
-
-## Create wavelength range and peak wavelength lists
-t, max_mim_wl, fit_mim_wl = [], [], []
 wavs = wavs[i1:i2]
 
-## Starting guess
-popt_0 = [650, 60, 0.05, 0]
+## Generate reflection data
+refl = (np.genfromtxt(fpath, delimiter=';',skip_header=33+i1, max_rows=i2-i1,
+    unpack=True, usecols=1) for fpath in fpaths)
 
-for i, fpath in enumerate(fpaths):
+## Fit Lorentz curve
+fit_results = [opt.curve_fit(mim.lorentz, wavs, r, popt_0,
+    method='lm', absolute_sigma=False) for r in refl]
+mim_wl = [r[0][0] for r in fit_results]
+mim_wl_std = [np.sqrt(r[1][0,0]) for r in fit_results]
 
-    refl = np.genfromtxt(fpath, delimiter=';',
-        skip_header=33, skip_footer=1, unpack=True, usecols=1)
-
-    ## Lowpass and truncate
-    refl = np.convolve(refl, g_wind, mode='same')
-    refl = refl[i1:i2]
-
-    ## Find max wavelength
-    max_wl = wavs[np.argmin(refl)]
-    max_mim_wl.append(max_wl)
-    popt_0[0] = max_wl
-
-    # Fit a Lorentz curve
-    popt = opt.leastsq(mim.l_residuals, popt_0, args=(wavs, refl))[0]
-    fit_mim_wl.append(popt[0])
-
-    ## Grab timestamp from inside file
-    with open(fpath) as open_file:
-        time_stamp = [open_file.readline() for i in range(4)]
-    time_stamp = (time_stamp[3].split(';')[1])[:-1]+'0'
-
-    ## Convert timestamp to minutes and add to our time list, t.
-    hr, min = time_stamp[0:2], time_stamp[2:4]
-    sec, ms = time_stamp[4:6], time_stamp[6:]
-    t_minutes = int(hr)*60+int(min)+int(sec)/60
-    t.append(t_minutes)
-
-    print("Completion: " + str(int((i/num_files)*100))+'%', end='\r')
+## Grab timestamp from each file
+with ExitStack() as stack:
+    open_files = (stack.enter_context(open(fpath)) for fpath in fpaths)
+    t = [mim.timestamp(open_file) for open_file in open_files]
 
 # Start from t=0
 t = t-np.min(t)
+peak_wl_output = np.vstack((t, mim_wl, mim_wl_std)).T
+np.savetxt(root+'peak_wls.txt', peak_wl_output, delimiter='\t',
+    header='Time (min)\t\t\tPeak wavelength (nm)\t\tFit stdev (nm)')
 
-peak_wl_output = np.vstack((t, max_mim_wl, fit_mim_wl)).T
-np.savetxt(root+'peak_wls.txt', peak_wl_output,
-    delimiter='\t',
-    header='time(min)\t\t\tMax wavelength (nm)\t\t\tpeak wavelength (nm)')
+## EXAMPLE parallel fitting
+# with concurrent.futures.ProcessPoolExecutor() as executor:
+#     results = [executor.submit(opt.leastsq, mim.l_residuals, popt_0,
+#         args=(wavs, r)) for r in refl]
+#     fit_mim_wl = [r.result()[0][0] for r in results]
