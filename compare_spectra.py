@@ -17,7 +17,7 @@ wl1, wl2 = 550, 800
 wavs = np.genfromtxt(root+fnames[0], delimiter=';',
     skip_header=33, skip_footer=1, unpack=True, usecols=(0))
 i1, i2 = np.argmin((wavs-wl1)**2), np.argmin((wavs-wl2)**2)
-wavs = wavs[i1:i2]
+# wavs = wavs[i1:i2]
 
 ## Create low-pass gaussian window
 g_wind = gaussian(len(wavs), 1)
@@ -26,13 +26,14 @@ g_wind = g_wind/sum(g_wind)
 ## Generate refl data, load and low-pass
 refl = (np.genfromtxt(root+fname, delimiter=';',skip_header=33, skip_footer=1,
     unpack=True, usecols=1) for fname in fnames)
-refl = [np.convolve(r, g_wind, mode='same')[i1:i2] for r in refl]
+refl = [np.convolve(r, g_wind, mode='same') for r in refl]
+refl_err = 0.05
 
 ## Find max, fit Lorentz curve, grab peak and std dev
-max_mim_wl = (wavs[np.argmin(r)] for r in refl)
+max_mim_wl = (wavs[i1+np.argmin(r[i1:i2])] for r in refl)
 popt_0 = [650, 60, 0.05, 0]
-fit_results = [opt.curve_fit(mim.lorentz, wavs, r, popt_0,
-    method='lm', absolute_sigma=False) for r in refl]
+fit_results = [opt.curve_fit(mim.lorentz, wavs[i1:i2], r[i1:i2], popt_0,
+    refl_err*np.ones(i2-i1), True, method='lm') for r in refl]
 fit_mim_wl = (r[0][0] for r in fit_results)
 mim_wl_std = (np.sqrt(r[1][0,0]) for r in fit_results)
 
@@ -52,10 +53,12 @@ with open(root+'outfile.txt', 'w') as outfile:
     for pwl in peak_wl_output: outfile.write(pwl+'\n')
 
 ## Graphical output
-for r, lab in zip(refl, labels): plt.plot(wavs, r, label=lab)
-plt.xlabel('Wavelength (nm)')
-plt.ylabel('Reflection (normalised)')
-plt.legend()
-plt.grid(True)
-plt.savefig(root+'Compared_spectra.png')
+fig, ax = plt.subplots()
+for r, lab in zip(refl, labels): ax.plot(wavs, r, label=lab)
+ax = mim.make_spectrum(ax)
+ax.set_xlim([500,1000])
+ax.set_ylim([0.1,1])
+ax.axvline(wl1, ls='--', lw=2, color='black')
+ax.axvline(wl2, ls='--', lw=2, color='black')
+plt.savefig(root+'Compared_spectra.png', transparent=True)
 plt.show()

@@ -1,3 +1,5 @@
+# import matplotlib.pyplot as plt
+
 def fano(x, a1, b1, c1, A1, e):
     eps1 = 2*(x-a1)/b1
     f1 = (eps1+c1)**2/(eps1**2+1)
@@ -29,3 +31,10 @@ def timestamp(file):
     sec, ms = time_stamp[4:6], time_stamp[6:]
     t_minutes = int(hr)*60+int(min)+int(sec)/60
     return t_minutes
+
+def make_spectrum(ax):
+    ax.grid(True)
+    ax.set_xlabel('Peak wavelength (nm)')
+    ax.set_ylabel('Reflection (normalised)')
+    ax.legend()
+    return ax
