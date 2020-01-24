@@ -3,12 +3,13 @@ import numpy as np
 import scipy.optimize as opt
 import scipy.signal as sig
 from scipy.signal.windows import gaussian
+import numpy.random as rand
 import mim
 
 wl1, wl2 = 600, 750
 
-root = '../compare_spec/'
-fname = 'bulk_000000000.csv'
+root = './'
+fname = 'eg_spec.csv'
 wavs, refl = np.genfromtxt(root+fname, delimiter=';', skip_header=33,
     skip_footer=1, unpack=True, usecols=(0,1))
 
@@ -22,6 +23,7 @@ i1, i2 = np.argmin((wavs-wl1)**2), np.argmin((wavs-wl2)**2)
 refl_err = 0.05
 
 try:
+    print('Fitting with default guess...')
     lorentz_params = [650, 60, 0.05, 0]
     fit_results = opt.curve_fit(mim.lorentz, wavs[i1:i2], refl[i1:i2],
         lorentz_params, refl_err*np.ones(i2-i1), method='lm',
@@ -29,10 +31,25 @@ try:
     lorentz_params = fit_results[0]
     lorentz_errs = np.sqrt(np.diag(fit_results[1]))
 except:
-    lorentz_params = () # Array of random numbers
-    fano_fit = [opt.least_squares(mim.l_residuals, lorentz_params,
+    print('Fitting with random guesses')
+    # Choose random numbers for fits
+    rand_pwl = [rand.choice(wavs[i1:i2]) for i in range(20)]
+    popt = [np.concatenate((np.array([p]), rand.rand(3))) for p in rand_pwl]
+
+    fano_fit = [opt.least_squares(mim.l_residuals, p,
         args=(wavs[i1:i2], refl[i1:i2])) for p in popt]
+
     # Select lowest residuals
+    residuals = [f.cost for f in fano_fit]
+    popt = [f.x for f in fano_fit]
+    lorentz_params = popt[np.argmin(residuals)]
+
+    # Perform fit with lowest-residual parameters
+    fit_results = opt.curve_fit(mim.lorentz, wavs[i1:i2], refl[i1:i2],
+        lorentz_params, refl_err*np.ones(i2-i1), method='lm',
+        absolute_sigma=True,)
+    lorentz_params = fit_results[0]
+    lorentz_errs = np.sqrt(np.diag(fit_results[1]))
 
 param_names = ('Peak', 'Width', 'Amp', 'Offset')
 for p in zip(param_names, lorentz_params, lorentz_errs):
