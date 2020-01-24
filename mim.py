@@ -30,10 +30,10 @@ def timestamp(file):
     ## Convert timestamp to minutes and add to our time list, t.
     if len(time_stamp) == 9:
         hr, min = time_stamp[0:2], time_stamp[2:4]
-        sec, ms = time_stamp[4:6], time_stamp[6:]
+        sec = time_stamp[4:6]
     elif len(time_stamp) == 8:
         hr, min = time_stamp[0:1], time_stamp[1:3]
-        sec, ms = time_stamp[3:5], time_stamp[5:]
+        sec = time_stamp[3:5]
     t_minutes = int(hr)*60+int(min)+int(sec)/60
     return t_minutes
 
