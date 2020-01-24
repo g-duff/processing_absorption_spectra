@@ -3,3 +3,4 @@ __pycache__/
 __pycache__/mim.cpython-36.pyc
 *csv
 *png
+.vscode
