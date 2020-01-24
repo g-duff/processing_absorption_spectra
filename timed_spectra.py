@@ -5,19 +5,19 @@ import numpy as np
 import scipy.optimize as opt
 from contextlib import ExitStack
 
-try:
-    import tkinter as tk
-    from tkinter import filedialog as fd
-    root = tk.Tk()
-    root.withdraw()
-    data_dir = fd.askdirectory()+'/'
-except ModuleNotFoundError:
-    data_dir = os.getcwd()
+# try:
+#     import tkinter as tk
+#     from tkinter import filedialog as fd
+#     root = tk.Tk()
+#     root.withdraw()
+#     data_dir = fd.askdirectory()+'/'
+# except ModuleNotFoundError:
+#     data_dir = os.getcwd()
 
 # Dashboard
 wl1, wl2 = 550, 800
 popt_0 = [650, 60, 0.05, 0]
-# data_dir = '../absorb_spec/'
+data_dir = '../absorb_spec/'
 
 # Create a list of spectrum files
 fpaths = [data_dir+a for a in sorted(os.listdir(data_dir)) if '.csv' in a]
