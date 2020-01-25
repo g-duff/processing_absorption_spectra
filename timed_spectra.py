@@ -1,26 +1,27 @@
 #!/usr/bin/python3
 # import concurrent.futures
-import mim, os
+import mim
 import numpy as np
 import scipy.optimize as opt
 from contextlib import ExitStack
+from pathlib import Path
 
 # try:
 #     import tkinter as tk
 #     from tkinter import filedialog as fd
 #     root = tk.Tk()
 #     root.withdraw()
-#     data_dir = fd.askdirectory()+'/'
+#     data_path = fd.askdirectory()+'/'
 # except ModuleNotFoundError:
-#     data_dir = os.getcwd()
+#     data_path = os.getcwd()
 
 # Dashboard
 wl1, wl2 = 550, 800
 popt_0 = [650, 60, 0.05, 0]
-data_dir = '../absorb_spec/'
+data_path = Path('../absorb_spec/')
 
 # Create a list of spectrum files
-fpaths = [data_dir+a for a in sorted(os.listdir(data_dir)) if '.csv' in a]
+fpaths = sorted(data_path.glob('*.csv'))
 
 ## Set and apply wavelength range using first spectrum file
 wavs = np.genfromtxt(fpaths[0], delimiter=';',
@@ -47,7 +48,7 @@ with ExitStack() as stack:
 # Start from t=0
 t = t-np.min(t)
 peak_wl_output = np.vstack((t, mim_wl, mim_wl_std)).T
-np.savetxt(data_dir+'peak_wls.txt', peak_wl_output, delimiter='\t',
+np.savetxt(data_path/'peak_wls.txt', peak_wl_output, delimiter='\t',
     header='Time (min)\t\t\tPeak wavelength (nm)\t\tFit stdev (nm)')
 
 ## EXAMPLE parallel fitting
