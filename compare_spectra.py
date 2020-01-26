@@ -28,7 +28,6 @@ wl1, wl2 = 680, 800
 wavs = np.genfromtxt(fpaths[0], delimiter=';',
     skip_header=33, skip_footer=1, unpack=True, usecols=(0))
 i1, i2 = np.argmin((wavs-wl1)**2), np.argmin((wavs-wl2)**2)
-# wavs = wavs[i1:i2]
 
 ## Create low-pass gaussian window
 g_wind = gaussian(len(wavs), 10)
@@ -38,7 +37,7 @@ g_wind = g_wind/sum(g_wind)
 refl = (np.genfromtxt(fp, delimiter=';',skip_header=33, skip_footer=1,
     unpack=True, usecols=1) for fp in fpaths)
 refl = [np.convolve(r, g_wind, mode='same') for r in refl]
-refl_err = 0.05
+refl_err = 0.01
 
 ## Graphical output
 fig, ax = plt.subplots()
@@ -58,19 +57,14 @@ max_mim_wl = [wavs[i1+np.argmin(r[i1:i2])] for r in refl]
 popt_0 = [max_mim_wl[0], 60, 0.05, 0]
 fit_results = [opt.curve_fit(mim.lorentz, wavs[i1:i2], r[i1:i2], popt_0,
     refl_err*np.ones(i2-i1), True, method='lm') for r in refl]
-fit_mim_wl = (r[0][0] for r in fit_results)
-mim_wl_std = (np.sqrt(r[1][0,0]) for r in fit_results)
+fit_mim_wl = [r[0][0] for r in fit_results]
+mim_wl_std = [np.sqrt(r[1][0,0]) for r in fit_results]
 
-## Format strings for text output
-peak_wl_output = [pwl[0][:20]+(3*'\t{:1.11f}').format(*pwl[1:])
-    for pwl in zip(labels, max_mim_wl, fit_mim_wl, mim_wl_std)]
+pwl_output = np.vstack((labels, max_mim_wl, fit_mim_wl, mim_wl_std)).T
+
+header = 'Spec name\tMax (nm):\tfit (nm):\tstd (nm):'
+print(header)
+for p in pwl_output: print(p)
 
 ## Print text output
-header = '#Spec name\tMax (nm):\tfit (nm):\tstd (nm):'
-print(header)
-for pwl in peak_wl_output: print(pwl)
-
-## Write text output to file
-with open(data_path/'outfile.txt', 'w') as outfile:
-    outfile.write(header+'\n')
-    for pwl in peak_wl_output: outfile.write(pwl+'\n')
+np.savetxt(data_path/'outfile.txt', pwl_output, header=header, fmt='%s')
