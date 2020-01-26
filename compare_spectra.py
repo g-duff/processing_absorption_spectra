@@ -7,6 +7,7 @@ import scipy.signal as sig
 import matplotlib.pyplot as plt
 from scipy.signal.windows import gaussian
 from pathlib import Path
+from prettytable import PrettyTable
 import mim
 
 ## Grab file names
@@ -60,11 +61,13 @@ fit_results = [opt.curve_fit(mim.lorentz, wavs[i1:i2], r[i1:i2], popt_0,
 fit_mim_wl = [r[0][0] for r in fit_results]
 mim_wl_std = [np.sqrt(r[1][0,0]) for r in fit_results]
 
+header = 'Spec name\tMax (nm)\tfit (nm)\tstd (nm)'
 pwl_output = np.vstack((labels, max_mim_wl, fit_mim_wl, mim_wl_std)).T
 
-header = 'Spec name\tMax (nm):\tfit (nm):\tstd (nm):'
-print(header)
-for p in pwl_output: print(p)
+PT = PrettyTable()
+PT.field_names = header.split('\t')
+for p in pwl_output: PT.add_row(p)
+print(PT)
 
 ## Print text output
 np.savetxt(data_path/'outfile.txt', pwl_output, header=header, fmt='%s')
