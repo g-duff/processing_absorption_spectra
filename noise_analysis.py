@@ -1,11 +1,13 @@
-# import matplotlib
-# matplotlib.use('Agg')
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize as opt
 import scipy.signal as sig
 
-
+# matplotlib.use('Agg') # For remote use
+font = {'size': 14}
+matplotlib.rc('font', **font)
+plt.tight_layout()
 
 root = '/home/george/Desktop/lith_bulk_002/'
 pk_wl = np.genfromtxt(root+'peak_wls.txt', usecols=(2), unpack=True,

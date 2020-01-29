@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-# import matplotlib       # For remote use
-# matplotlib.use('Agg')   # For remote use
+import matplotlib
 import numpy as np
 import scipy.optimize as opt
 import scipy.signal as sig
@@ -9,6 +8,11 @@ from scipy.signal.windows import gaussian
 from pathlib import Path
 from prettytable import PrettyTable
 import mim
+
+# matplotlib.use('Agg')   # For remote use
+font = {'size': 14}
+matplotlib.rc('font', **font)
+plt.tight_layout()
 
 ## Grab file names
 # try:

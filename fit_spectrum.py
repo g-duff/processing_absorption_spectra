@@ -6,6 +6,10 @@ from scipy.signal.windows import gaussian
 import numpy.random as rand
 import mim
 
+font = {'size': 14}
+matplotlib.rc('font', **font)
+plt.tight_layout()
+
 wl1, wl2 = 600, 750
 
 root = './'
