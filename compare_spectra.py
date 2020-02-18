@@ -12,7 +12,6 @@ import mim
 # matplotlib.use('Agg')   # For remote use
 font = {'size': 14}
 matplotlib.rc('font', **font)
-plt.tight_layout()
 
 ## Grab file names
 # try:
@@ -53,6 +52,8 @@ ax.set_xlim([500,1000])
 ax.set_ylim([0,1])
 # ax.axvline(wl1, ls='--', lw=2, color='black')
 # ax.axvline(wl2, ls='--', lw=2, color='black')
+
+plt.tight_layout()
 plt.savefig(data_path/'Compared_spectra.png', transparent=True)
 plt.show()
 

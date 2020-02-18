@@ -4,6 +4,10 @@ from numpy import loadtxt, mean, std, array, nonzero
 import matplotlib.pyplot as plt
 from pathlib import Path
 
+# Adjust figure
+font = {'size': 14}
+matplotlib.rc('font', **font)
+
 # Load data
 fpath = Path('../LED_data/off_sample_through_lens/70db.txt')
 index, LED1, LED2, *voltages = loadtxt(fpath, skiprows=1,unpack=True)
@@ -18,4 +22,5 @@ V2 = V_mean[nonzero(LED2)]
 
 # Plot
 plt.plot(V1/V2)
+plt.tight_layout()
 plt.show()

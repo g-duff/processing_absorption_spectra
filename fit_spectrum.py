@@ -8,7 +8,6 @@ import mim
 
 font = {'size': 14}
 matplotlib.rc('font', **font)
-plt.tight_layout()
 
 wl1, wl2 = 600, 750
 
@@ -68,5 +67,7 @@ ax.axvline(wl2, ls='--', lw=2, color='black')
 ax.set_xlim([500,1000])
 ax.set_ylim(np.mean(refl)+[-0.3,+0.1])
 ax = mim.make_spectrum(ax)
+
+plt.tight_layout()
 plt.savefig(root+'fit_spectrum.png', transparent=True)
 plt.show()

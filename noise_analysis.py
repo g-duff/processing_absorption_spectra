@@ -7,7 +7,6 @@ import scipy.signal as sig
 # matplotlib.use('Agg') # For remote use
 font = {'size': 14}
 matplotlib.rc('font', **font)
-plt.tight_layout()
 
 root = '/home/george/Desktop/lith_bulk_002/'
 pk_wl = np.genfromtxt(root+'peak_wls.txt', usecols=(2), unpack=True,
@@ -48,6 +47,8 @@ plt.axhline(mean-2*std/2, ls='--', color='red')
 plt.axhline(mean+3*std/2, ls='--', color='green', label=f'3$\sigma$: {3*std:1.4f}')
 plt.axhline(mean-3*std/2, ls='--', color='green')
 plt.legend()
+
+plt.tight_layout()
 plt.savefig(root+'fig_noise_poly_offset.png')
 plt.show()
 
@@ -66,5 +67,6 @@ plt.axhline(-2*std/2, ls='--', color='red')
 plt.axhline(+3*std/2, ls='--', color='green', label=f'3$\sigma$: {3*std:1.4f}')
 plt.axhline(-3*std/2, ls='--', color='green')
 plt.legend()
+plt.tight_layout()
 plt.savefig(root+'fig_noise_poly_corrected.png')
 plt.show()
