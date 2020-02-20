@@ -10,9 +10,11 @@ font = {'size': 14}
 matplotlib.rc('font', **font)
 
 # Load data
-fpath = Path('../LED_data/off_sample_through_lens/40db.txt')
-index, LED1, LED2, *voltages = loadtxt(fpath, skiprows=1,unpack=True)
+fpath = Path('/home/gd681/Desktop/bulk_trial/Di_to_15pc_NaCl.txt')
+time, LED1, LED2, *voltages = loadtxt(fpath, skiprows=1,unpack=True)
 voltages = array(voltages)
+
+time = time[::3]/60 ## Convert to minutes
 
 # Example of how to grab individual channels for stats
 # V1 = voltages[:,flatnonzero(LED1)]
@@ -25,7 +27,11 @@ V_mean, V_std = mean(voltages, 0), std(voltages, 0)
 V1 = V_mean[flatnonzero(LED1)]
 V2 = V_mean[flatnonzero(LED2)]
 
+plt.plot(time, V1)
+plt.plot(time, V2)
+plt.show()
+
 # Plot
-plt.plot(V1/V2)
+plt.plot(time, V2/V1)
 plt.tight_layout()
 plt.show()
