@@ -10,10 +10,10 @@ matplotlib.rc('font', **font)
 
 # Load data
 fpath = Path('/Users/george/Desktop/Di_to_15pc_NaCl.txt')
-time, LED1, LED2, *voltages = loadtxt(fpath, skiprows=1,unpack=True)
+time, LED1, LED2, *voltages = loadtxt(fpath, skiprows=1, unpack=True)
 voltages = array(voltages)
 
-time = time[::3]/60 ## Convert to minutes
+time = time[::3]/60  # Convert to minutes
 
 # Example of how to grab individual channels for stats
 # V1 = voltages[:,flatnonzero(LED1)]

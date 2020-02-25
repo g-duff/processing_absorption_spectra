@@ -10,7 +10,7 @@ matplotlib.rc('font', **font)
 
 root = '/home/george/Desktop/lith_bulk_002/'
 pk_wl = np.genfromtxt(root+'peak_wls.txt', usecols=(2), unpack=True,
-    skip_header=1)
+                      skip_header=1)
 
 pk_wl = pk_wl[30:90]
 
@@ -42,9 +42,11 @@ plt.xlabel('Time (minutes)')
 plt.ylabel('Peak wavelength (nm)')
 plt.axhline(mean+std/2, ls='--', color='black', label=f'$\sigma$: {std:1.4f}')
 plt.axhline(mean-std/2, ls='--', color='black')
-plt.axhline(mean+2*std/2, ls='--', color='red', label=f'2$\sigma$: {2*std:1.4f}')
+plt.axhline(mean+2*std/2, ls='--', color='red',
+            label=f'2$\sigma$: {2*std:1.4f}')
 plt.axhline(mean-2*std/2, ls='--', color='red')
-plt.axhline(mean+3*std/2, ls='--', color='green', label=f'3$\sigma$: {3*std:1.4f}')
+plt.axhline(mean+3*std/2, ls='--', color='green',
+            label=f'3$\sigma$: {3*std:1.4f}')
 plt.axhline(mean-3*std/2, ls='--', color='green')
 plt.legend()
 
@@ -60,11 +62,12 @@ plt.plot(t, pk_wl, 'C0.', markersize=4)
 plt.grid(True)
 plt.xlabel('Time (minutes)')
 plt.ylabel('Peak wavelength shift (nm)')
-plt.axhline(+std/2, ls='--', color='black', label=f'$\sigma$: {std:1.4f}')
+plt.axhline(+std/2, ls='--', color='black', label=f'$\sigma$: {std: 1.4f}')
 plt.axhline(-std/2, ls='--', color='black')
-plt.axhline(+2*std/2, ls='--', color='red', label=f'2$\sigma$: {2*std:1.4f}')
+plt.axhline(+2*std/2, ls='--', color='red', label=f'2$\sigma$: {2*std: 1.4f}')
 plt.axhline(-2*std/2, ls='--', color='red')
-plt.axhline(+3*std/2, ls='--', color='green', label=f'3$\sigma$: {3*std:1.4f}')
+plt.axhline(+3*std/2, ls='--', color='green',
+            label=f'3$\sigma$: {3*std: 1.4f}')
 plt.axhline(-3*std/2, ls='--', color='green')
 plt.legend()
 plt.tight_layout()
