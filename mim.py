@@ -8,10 +8,9 @@ def fano(x, a1, b1, c1, A1, e):
     return y
 
 
-def lorentz(x, a1, b1, A1, e):
-    eps1 = 2*(x-a1)/b1
-    f1 = eps1**2/(eps1**2+1)
-    y = e+A1*f1
+def lorentz(x, a, b, A=1, e=0):
+    f = b**2/((x-a)**2+b**2)
+    y = e+A*f
     return y
 
 
